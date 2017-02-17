@@ -1,0 +1,206 @@
+{
+  "project_info": {
+    "project_number": "562291551632",
+    "firebase_url": "https://clubcom-inclub.firebaseio.com",
+    "project_id": "clubcom-inclub",
+    "storage_bucket": "clubcom-inclub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562291551632:android:3d8dbd3824d996ff",
+        "android_client_info": {
+          "package_name": "com.clubcom.inclub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562291551632-65bj8j901956foapqc0iup936fv69enq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.clubcom.inclub",
+            "certificate_hash": "50F7FA95DFD0BFD357433ECC8E30BB5D1C7B2F75"
+          }
+        },
+        {
+          "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "562291551632-tuavq9hpemtqinol4p4kr6a1ph5igfsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMLqhSqWlZXmERvERpxeUV4k4q2gReWA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562291551632-dol74l34l8ulrovdodo6tj5m1ti7feit.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clubcom.inclubswift.twentyfour"
+              }
+            },
+            {
+              "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562291551632:android:a06cf055b83b07ef",
+        "android_client_info": {
+          "package_name": "com.clubcom.inclub.planetfitness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "562291551632-tuavq9hpemtqinol4p4kr6a1ph5igfsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMLqhSqWlZXmERvERpxeUV4k4q2gReWA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562291551632:android:04ce4cefea013087",
+        "android_client_info": {
+          "package_name": "com.clubcom.inclub.twentyfour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "562291551632-tuavq9hpemtqinol4p4kr6a1ph5igfsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMLqhSqWlZXmERvERpxeUV4k4q2gReWA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562291551632:android:bd1ec48999c98390",
+        "android_client_info": {
+          "package_name": "com.clubcom.inclub.nysc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "562291551632-tuavq9hpemtqinol4p4kr6a1ph5igfsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMLqhSqWlZXmERvERpxeUV4k4q2gReWA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562291551632:android:9fd4bd4d9372f55d",
+        "android_client_info": {
+          "package_name": "com.clubcom.inclub.golds"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562291551632-lr24u797pt6vrqgfh1l1baa56gaojd84.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "562291551632-tuavq9hpemtqinol4p4kr6a1ph5igfsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMLqhSqWlZXmERvERpxeUV4k4q2gReWA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
