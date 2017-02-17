@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nav_bar_bg_darker">#2B3245</color>
+    <color name="nav_bar_bg_color">#F04B35</color>
+    <color name="nav_bar_text_color">#FFFFFF</color>
+    <color name="nav_bar_icon_color">#FFFFFF</color>
+    <color name="menu_bg_color">#313748</color>
+    <color name="menu_text_color">#FFFFFF</color>
+    <color name="menu_icon_color">#FFFFFF</color>
+    <color name="content_bg_color">#FFFFFF</color>
+    <color name="content_text_color">#000000</color>
+    <color name="content_link_color">#0645AD</color>
+    <color name="content_active_link_color">#0B0080</color>
+</resources>

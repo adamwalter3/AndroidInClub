@@ -1,0 +1,137 @@
+apply plugin: 'com.android.application'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+
+    defaultConfig {
+        multiDexEnabled true
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionName readVersionName()
+        versionCode readVersionCode()
+        applicationId = "com.clubcom.inclub"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("clubcom.keystore")
+            storePassword "clubcom2221"
+            keyAlias "clubcom"
+            keyPassword "clubcom2221"
+        }
+
+        debug {
+            storeFile file("clubcom.keystore")
+            storePassword "clubcom2221"
+            keyAlias "clubcom"
+            keyPassword "clubcom2221"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            archivesBaseName = "com.clubcom.InClub-" + readVersionName()
+        }
+    }
+
+    productFlavors {
+        planetfitness {
+            applicationId "com.clubcom.inclub.planetfitness"
+            versionName "planet-fitness.1.0"
+        }
+
+        twentyfour {
+            applicationId "com.clubcom.inclub.twentyfour"
+            versionName "twentyfour.1.0"
+        }
+
+        nysc {
+            applicationId "com.clubcom.inclub.nysc"
+            versionName "nysc.1.0"
+        }
+
+        golds {
+            applicationId "com.clubcom.inclub.golds"
+            versionName "golds.1.0"
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'LICENSE.txt'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile ('com.clubcom.ccframework:library:1.0.0-SNAPSHOT@aar') {
+        transitive = true
+    }
+
+    compile 'com.google.ExoPlayer:library:1.0.0-SNAPSHOT@aar'
+    compile 'com.clubcom.communicationframework:library:1.0.0-SNAPSHOT@aar'
+
+    compile 'me.grantland:autofittextview:0.2.+'
+
+    compile 'com.google.android.gms:play-services-auth:9.8.0'
+    compile 'com.google.firebase:firebase-core:9.8.0'
+    compile 'com.google.firebase:firebase-crash:9.8.0'
+}
+
+def readVersionName() {
+    def versionPropsFile = file('../gradle.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        return versionProps['VERSION_NAME']
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+}
+
+def readVersionCode() {
+    def versionPropsFile = file('../gradle.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        return versionProps['VERSION_CODE'].toInteger()
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+}
+
+apply plugin: 'com.google.gms.google-services'

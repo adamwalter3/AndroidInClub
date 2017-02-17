@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent_black">#55000000</color>
+    <color name="transparent_black_15">#25000000</color>
+    <color name="transparent_white_10">#1AFFFFFF</color>
+
+    <color name="nav_bar_bg_darker">#0688C0</color>
+    <color name="nav_bar_bg_color">#43AFDD</color>
+    <color name="nav_bar_text_color">#FFFFFF</color>
+    <color name="nav_bar_icon_color">#FFF333</color>
+    <color name="menu_bg_color">#1E70AE</color>
+    <color name="menu_text_color">#FFFFFF</color>
+    <color name="menu_icon_color">#FFF333</color>
+    <color name="content_bg_color">#FFFFFF</color>
+    <color name="content_text_color">#000000</color>
+    <color name="content_link_color">#000000</color>
+    <color name="content_active_link_color">#D2D2D2</color>
+</resources>

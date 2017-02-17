@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">ClubCom In Club</string>
+
+    <!--<string name="api_url">https://192.168.0.30/</string>-->
+    <!--<string name="transfer_url">http://192.168.0.30:8081/</string>-->
+
+    <string name="api_url">https://stagingms.clubcom.com/</string>
+    <string name="transfer_url">http://stagingms.clubcom.com:8081/</string>
+
+    <!--General-->
+    <string name="ok">OK</string>
+    <string name="try_again">Try Again</string>
+    <string name="error">Error</string>
+    <string name="close">Close</string>
+    <string name="please_wait">Please Wait</string>
+    <string name="check_credentials">Checking For Saved Credentials</string>
+    <string name="submit">Submit</string>
+
+    <!--Connectivity -->
+    <string name="connection_required">This application requires a connection to the ClubCom Network to function fully. \n Connecting to a regular network will allow limited functionality. \n If you are in range of a ClubCom network you can connect by clicking on its name below. \n If you wish to use the app in its limited mode please connect to the internet through the device settings.</string>
+    <string name="connect_to_a_clubcom_network">Connect to a ClubCom Network</string>
+    <string name="or">OR</string>
+
+    <string name="saved_credentials">Your Login Information Was Saved</string>
+    <string name="credential_save_failed">Failed To Save Credentials</string>
+    <string name="connect_to_gym_wifi">CONNECT TO GYM WIFI</string>
+
+    <!--Branded Channel-->
+    <string name="incomplete_account_info">You must complete your account information to participate in contests.</string>
+    <string name="go_to_my_account">Go to My Account</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="contest_entered_string">Congratulations! You have been entered in this contest.  You will receive an email shortly confirming the contest details.  You can opt-in to receive further emails from the contest holder.</string>
+    <string name="opt_in">Opt-In</string>
+    <string name="no_thanks">No Thanks</string>
+
+    <string name="forgot_something_success">Success</string>
+    <string name="forgot_something_failed_message">There was an error communicating with the server.  Please, try again later.</string>
+    <string name="forgot_something_username_not_found">An account with the entered username was not found.  You may register for a new account or try again.</string>
+    <string name="forgot_something_label_text">Enter Username Or Email</string>
+    <string name="forgot_something_title">Forgot Something?</string>
+    <string name="forgot_something_bad_format">You must send an email or username (phone number) for authentication</string>
+
+    <string name="password_reset_alert_message">An email was sent to %1$s.  Please, retrieve your new password and log in.</string>
+    <string name="session_save_unknown_error">An unknown error occurred while trying to create your profile.  Please try again later.</string>
+    <string name="connection_not_available">This feature is only available when the server is connected. Please try again later.</string>
+    <string name="config_file_missing">Account Configuration files are missing. Please try again later.</string>
+    <string name="swap_columns">Swap Columns</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="not_connected_message">You must be connected to the internet to use this application.  If you are in a supported club we can automatically connect you to the ClubCom WiFi.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="connect_to_clubcom">Connect To ClubCom</string>
+    <string name="auto_connect_failed_title">Automatic Connection Failed</string>
+    <string name="auto_connect_failed_message">The attempt to connect automatically failed.  Please connect manually.</string>
+    <string name="connect">Connect</string>
+    <string name="scanning_title">Scanning</string>
+    <string name="scanning_message">Scanning for ClubCom WiFi...</string>
+</resources>
