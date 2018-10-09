@@ -34,11 +34,6 @@ public class MainApplication extends Application {
     public static List<ContentItem> sMidrolls;
     public static int sMidrollIndex = 0;
 
-    public static HashMap<Integer, AdOrder> sBrandedChannels = new HashMap<>();
-
-    public static List<ContentItem> sBanners;
-    public static GoogleApiClient sGoogleApiClient;
-
     @Override
     public void onCreate() {
         super.onCreate();

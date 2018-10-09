@@ -14,13 +14,26 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
+import com.android.volley.VolleyError;
 import com.clubcom.ccframework.FrameworkApplication;
+import com.clubcom.ccframework.util.BackEnd;
 import com.clubcom.inclub.MainApplication;
+import com.clubcom.projectile.JsonElementListener;
+import com.clubcom.projectile.StringListener;
+import com.google.gson.JsonElement;
 
 /**
  * Created by adamwalter3 on 7/1/16.
  */
 public class NetworkUtil {
+    public interface ConnectionCheckComplete {
+        void complete();
+    }
+
+    interface ConnectedToClubCom {
+        void isConnected();
+        void isNotConnected(boolean corporateAvailable);
+    }
     private final static String WIFI_PASSWORD = "!QAZxsw2#EDCvfr4";
 
     public static boolean isConnected(@NonNull Context context) {
@@ -52,6 +65,28 @@ public class NetworkUtil {
         } else {
             return isConnected(connMgr, type);
         }
+    }
+
+    public static void isConnectedToClubCom(Context ctx, final ConnectedToClubCom connectedToClubCom) {
+        if (ctx == null || connectedToClubCom == null) {
+            return;
+        }
+
+        BackEnd.getIsClubCom(ctx, new StringListener() {
+            @Override
+            public void onResponse(String response) {
+                if (response.equals("0")) {
+                    connectedToClubCom.isConnected();
+                } else {
+                    connectedToClubCom.isNotConnected(true);
+                }
+            }
+
+            @Override
+            public void onError(VolleyError volleyError) {
+                connectedToClubCom.isNotConnected(false);
+            }
+        });
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -91,12 +126,13 @@ public class NetworkUtil {
         return null;
     }
 
-    public static boolean checkConnections(Context ctx) {
+    public static boolean checkConnections(Context ctx, final ConnectionCheckComplete connectionCheckComplete) {
         ConnectivityManager connectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
         int wiFiPermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_WIFI_STATE);
         int networkPermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_NETWORK_STATE);
+        FrameworkApplication.NETWORK_STATE_CURRENT = true;
 
         if (wiFiPermission == PackageManager.PERMISSION_GRANTED) {
             if (networkPermission == PackageManager.PERMISSION_GRANTED) {
@@ -108,30 +144,40 @@ public class NetworkUtil {
                         FrameworkApplication.CURRENT_NETWORK = networkInfo.getExtraInfo();
                         FrameworkApplication.WIFI_CONNECTED = true;
                         System.out.println("Connected to: " + FrameworkApplication.CURRENT_NETWORK);
-                        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                        String ssid = wifiInfo.getSSID();
-                        if (ssid.toLowerCase().contains("clubcom")) {
-                            FrameworkApplication.WIFI_CONNECTED_CLUBCOM = isClubcomWifi();
-                            return true;
-                        } else {
-                            FrameworkApplication.WIFI_CONNECTED_CLUBCOM = false;
-                            return true;
-                        }
+                        NetworkUtil.isConnectedToClubCom(ctx, new ConnectedToClubCom() {
+                            @Override
+                            public void isConnected() {
+                                FrameworkApplication.WIFI_CONNECTED_CLUBCOM = true;
+                                connectionCheckComplete.complete();
+                            }
+
+                            @Override
+                            public void isNotConnected(boolean corporateAvailable) {
+                                FrameworkApplication.WIFI_CONNECTED_CLUBCOM = false;
+                                FrameworkApplication.CORPORATE_CALLS_AVAILABLE = corporateAvailable;
+                                connectionCheckComplete.complete();
+                            }
+                        });
+                        return true;
                     } else {
                         FrameworkApplication.WIFI_CONNECTED = false;
                         FrameworkApplication.WIFI_CONNECTED_CLUBCOM = false;
+                        connectionCheckComplete.complete();
                         return true;
                     }
                 } else {
                     FrameworkApplication.NETWORK_CONNECTED = false;
+                    connectionCheckComplete.complete();
                     return true;
                 }
             } else {
                 FrameworkApplication.NETWORK_PERMISSION_ERROR = true;
+                connectionCheckComplete.complete();
                 return false;
             }
         } else {
             FrameworkApplication.WIFI_PERMISSION_ERROR = true;
+            connectionCheckComplete.complete();
             return false;
         }
     }
@@ -155,9 +201,5 @@ public class NetworkUtil {
 
     public static String connectToWifi(Context ctx, String ssid) {
         return connectToWifi(ctx, ssid, WIFI_PASSWORD);
-    }
-
-    private static boolean isClubcomWifi() {
-        return true;
     }
 }

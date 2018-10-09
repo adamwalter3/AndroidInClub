@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 
 import com.android.volley.VolleyError;
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.BaseActivity;
 import com.clubcom.ccframework.activity.MusicActivity;
 import com.clubcom.ccframework.fragment.BaseFragment;
@@ -31,7 +32,9 @@ import com.clubcom.inclub.fragment.TabletMusicWidgetFragment;
 import com.clubcom.inclub.util.BannerPlayer;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
 import com.clubcom.inclub.util.MidrollPlayer;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.inclub.util.TabletActionHandler;
 import com.clubcom.projectile.JsonElementListener;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -104,7 +107,10 @@ public class TabletMusicActivity extends MusicActivity {
 
     @Override
     public void playMusicVideo(String channelId, int index, long position, ExoPlayerVideoFragment exoPlayerVideoFragment) {
-        exoPlayerVideoFragment.playHttpStream(UrlFactory.getMediaUrl(mPlaylistItems.get(index)), position);
+        //TODO Maybe populate more
+        ContentItem contentItem = new ContentItem();
+        contentItem.setContentID(Integer.valueOf(mPlaylistItems.get(index).getContentID()));
+        exoPlayerVideoFragment.playHttpStream(contentItem, UrlFactory.getMediaUrl(mPlaylistItems.get(index)), position);
     }
 
     @Override
@@ -197,6 +203,22 @@ public class TabletMusicActivity extends MusicActivity {
 
     @Override
     public void writeLogEntry(String log) {
+        LogReporter.reportLog(mBaseActivity, log);
+    }
 
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }

@@ -18,10 +18,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.LogInActivity;
 import com.clubcom.ccframework.fragment.LogInFragment;
 import com.clubcom.ccframework.util.BackEnd;
@@ -36,6 +41,7 @@ import com.clubcom.communicationframework.model.account.LogInNetworkObject;
 import com.clubcom.communicationframework.model.account.LogInUserObject;
 import com.clubcom.communicationframework.model.account.TabletLogInObject;
 import com.clubcom.communicationframework.model.account.UserNetworkObject;
+import com.clubcom.communicationframework.model.ads.AdList;
 import com.clubcom.communicationframework.model.ads.OrderGroupMap;
 import com.clubcom.communicationframework.model.apps.LayoutMap;
 import com.clubcom.communicationframework.model.apps.LayoutObject;
@@ -51,6 +57,7 @@ import com.clubcom.inclub.receiver.NetworkStateReceiver;
 import com.clubcom.inclub.util.BannerPlayer;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.GroupXHelper;
+import com.clubcom.inclub.util.LogReporter;
 import com.clubcom.inclub.util.MidrollPlayer;
 import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.projectile.JsonElementListener;
@@ -65,7 +72,16 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +96,7 @@ public class TabletLogInActivity extends LogInActivity  {
     protected GoogleApiClient mGoogleApiClient;
     private NetworkStateReceiver.OnNetworkStateUpdated mNetworkStateReceiver;
     private BroadcastReceiver mWifiScanReceiver = null;
+    private boolean mCredentialsRequested = false;
 
     public final static int RC_SAVE = 11223;
     public final static int RC_READ = 11224;
@@ -88,112 +105,15 @@ public class TabletLogInActivity extends LogInActivity  {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        mNetworkStateReceiver = new NetworkStateReceiver.OnNetworkStateUpdated() {
-            @Override
-            public void networkConnected(String name) {
-                mLogInFragment.enableButtons();
-                mBaseActivity.hideProgressDialog();
-                if (mAlertDialog != null) {
-                    mAlertDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void networkStateChanged(String details) {
-                if (!details.equals("DISCONNECTED")) {
-                    if (!mBaseActivity.isPaused()) {
-                        mBaseActivity.showProgressDialog("Connecting...", details);
-                    }
-                } else {
-                    mLogInFragment.disableButtons();
-                }
-            }
-
-            @Override
-            public void failedToConnect() {
-                mBaseActivity.showActivityAlertDialog("Failed", "Failed to Connect");
-                mLogInFragment.disableButtons();
-                showNotConnectedDialog();
-            }
-        };
     }
 
     public void showNotConnectedDialog() {
-        showActivityAlertDialog(getString(R.string.not_connected), getString(R.string.not_connected_message), null, null, getString(R.string.connect_to_clubcom), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mWifiManager == null) {
-                    mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                }
-                if (!mWifiManager.isWifiEnabled()) {
-                    mWifiManager.setWifiEnabled(true);
-                }
-
-                if (mWifiScanReceiver == null) {
-                    mWifiScanReceiver = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (mWifiScanReceiver != null) {
-                                unregisterReceiver(mWifiScanReceiver);
-                            }
-
-                            hideProgressDialog();
-
-                            List<ScanResult> results = mWifiManager.getScanResults();
-                            final List<ScanResult> clubcomResults = new ArrayList<>();
-                            for (ScanResult result : results) {
-                                if (result.SSID.toLowerCase().startsWith("clubcom") && !clubcomResults.contains(result)) {
-                                    clubcomResults.add(result);
-                                }
-                            }
-
-                            if (results.size() == 0) {
-                                showActivityAlertDialog(getString(R.string.auto_connect_failed_title), getString(R.string.auto_connect_failed_message), null, null, "Open Settings", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        openSettings();
-                                    }
-                                }, null, null, false);
-                            } else if (results.size() > 1) {
-                                int count = 0;
-                                String[] choices = new String[clubcomResults.size()];
-                                for (ScanResult result : clubcomResults) {
-                                    choices[count] = result.SSID;
-                                    count++;
-                                }
-
-                                new AlertDialog.Builder(mBaseActivity)
-                                        .setSingleChoiceItems(choices, 0, null)
-                                        .setPositiveButton(getString(R.string.connect), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int whichButton) {
-                                                dialog.dismiss();
-                                                int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                                                if (selectedPosition != -1) {
-                                                    NetworkUtil.connectToWifi(mBaseActivity, clubcomResults.get(selectedPosition).SSID);
-                                                } else {
-                                                    //TODO show error
-                                                }
-                                            }
-                                        })
-                                        .show();
-                            } else if (results.size() == 1) {
-                                NetworkUtil.connectToWifi(mBaseActivity, results.get(0).SSID);
-                            }
-                        }
-                    };
-                }
-
-                registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                mWifiManager.startScan();
-                showProgressDialog(getString(R.string.scanning_title) , getString(R.string.scanning_message));
-            }
-        }, getString(R.string.open_settings), new DialogInterface.OnClickListener() {
+        showActivityAlertDialog(getString(R.string.not_connected), getString(R.string.not_connected_message), null, null, getString(R.string.open_settings), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 openSettings();
             }
-        }, false);
+        }, null, null, true);
     }
 
     protected void openSettings() {
@@ -233,7 +153,6 @@ public class TabletLogInActivity extends LogInActivity  {
     @Override
     protected void superOnCreateCalled() {
         super.superOnCreateCalled();
-        showProgressDialog(getString(R.string.logging_in), getString(R.string.check_credentials));
 
         mGoogleApiClient = GoogleApiHelper.getGoogleAPIClient(mBaseActivity);
         mCredentialRequest = new CredentialRequest.Builder()
@@ -253,20 +172,35 @@ public class TabletLogInActivity extends LogInActivity  {
         requestCredentials();
     }
 
-    private void requestCredentials() {
-        Auth.CredentialsApi.request(mGoogleApiClient, mCredentialRequest).setResultCallback(new ResultCallback<CredentialRequestResult>() {
-            @Override
-            public void onResult(@NonNull CredentialRequestResult credentialRequestResult) {
-                if (credentialRequestResult.getStatus().isSuccess()) {
-                    onCredentialRetrieved(credentialRequestResult.getCredential());
-                } else if (credentialRequestResult.getStatus().getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
-                    hideProgressDialog();
-                    resolveResult(credentialRequestResult.getStatus());
-                } else {
-                    hideProgressDialog();
-                }
+    private synchronized void requestCredentials() {
+        if (!mCredentialsRequested) {
+            mCredentialsRequested = true;
+            if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                Auth.CredentialsApi.request(mGoogleApiClient, mCredentialRequest).setResultCallback(new ResultCallback<CredentialRequestResult>() {
+                    @Override
+                    public void onResult(@NonNull CredentialRequestResult credentialRequestResult) {
+                        if (credentialRequestResult.getStatus().isSuccess()) {
+                            onCredentialRetrieved(credentialRequestResult.getCredential());
+                        } else if (credentialRequestResult.getStatus().getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
+                            hideProgressDialog();
+                            resolveResult(credentialRequestResult.getStatus());
+                        } else {
+                            hideProgressDialog();
+                        }
+                    }
+                });
+            } else if (!FrameworkApplication.NETWORK_STATE_CURRENT) {
+                NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+                    @Override
+                    public void complete() {
+                        mCredentialsRequested = false;
+                        requestCredentials();
+                    }
+                });
+            } else {
+                showNotConnectedDialog();
             }
-        });
+        }
     }
 
     @Override
@@ -451,6 +385,8 @@ public class TabletLogInActivity extends LogInActivity  {
                                 keysToRemove.add(menuKey);
                             } else if (build.equals("golds") && !permissions[25]) {
                                 keysToRemove.add(menuKey);
+                            } else if (build.equals("laf") && !permissions[24]) {
+                                keysToRemove.add(menuKey);
                             }
                         }
                     }
@@ -573,9 +509,7 @@ public class TabletLogInActivity extends LogInActivity  {
     protected void onResume() {
         super.onResume();
 
-        if (!NetworkUtil.isConnected(mBaseActivity)) {
-            showNotConnectedDialog();
-        }
+        requestCredentials();
     }
 
     @Override
@@ -585,6 +519,8 @@ public class TabletLogInActivity extends LogInActivity  {
         if (mLogInFragment != null) {
             mLogInFragment.enableButtons();
         }
+
+        mCredentialsRequested = false;
     }
 
     @Override
@@ -649,6 +585,6 @@ public class TabletLogInActivity extends LogInActivity  {
 
     @Override
     public void writeLogEntry(String log) {
-
+        LogReporter.reportLog(mBaseActivity, log);
     }
 }

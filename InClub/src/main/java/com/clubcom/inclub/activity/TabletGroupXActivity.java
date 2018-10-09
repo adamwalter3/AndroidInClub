@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 
 import com.android.volley.VolleyError;
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.GroupXActivity;
 import com.clubcom.ccframework.fragment.GroupXScheduleFragment;
 import com.clubcom.ccframework.util.BackEnd;
@@ -17,6 +18,8 @@ import com.clubcom.inclub.R;
 import com.clubcom.inclub.fragment.TabletGroupXScheduleFragment;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.projectile.JsonElementListener;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.JsonElement;
@@ -44,7 +47,7 @@ public class TabletGroupXActivity extends GroupXActivity {
 
     @Override
     public void getGroupX(String classType) {
-        BackEnd.getGroupX(mBaseActivity, getIntent().getExtras().getString(EXTRA_CLASS_TYPE), new JsonElementListener() {
+        BackEnd.getGroupX(mBaseActivity, null, new JsonElementListener() {
             @Override
             public void onResponse(JsonElement jsonElement) {
                 String decodedText = HTMLDecoder.decodeHTML(jsonElement.toString());
@@ -120,6 +123,22 @@ public class TabletGroupXActivity extends GroupXActivity {
 
     @Override
     public void writeLogEntry(String log) {
+        LogReporter.reportLog(mBaseActivity, log);
+    }
 
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }

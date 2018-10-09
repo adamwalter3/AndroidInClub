@@ -18,17 +18,19 @@ import com.google.android.gms.common.api.Status;
 public class LogOutHelper {
     public static void doLogOut(GoogleApiClient googleApiClient, BaseActivity baseActivity) {
         if (MainApplication.sUserCredential != null) {
-            Auth.CredentialsApi.delete(googleApiClient, MainApplication.sUserCredential).setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                    if (status != null) {
-                        if (status.isSuccess()) {
-                            // Credential was deleted successfully
+            if (googleApiClient != null && googleApiClient.isConnected()) {
+                Auth.CredentialsApi.delete(googleApiClient, MainApplication.sUserCredential).setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        if (status != null) {
+                            if (status.isSuccess()) {
+                                // Credential was deleted successfully
 
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
 
         MainApplication.sTabletLogInObject = null;

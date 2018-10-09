@@ -23,6 +23,7 @@ public class SplashScreenActivity extends FragmentActivity {
     protected WifiManager mWifiManager;
 
     protected boolean mWifiStateChecked = false;
+    protected boolean mWifiInitialized = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +57,12 @@ public class SplashScreenActivity extends FragmentActivity {
         }
 
         mStartHandler.post(mStartRunnable);
-        boolean success = NetworkUtil.checkConnections(this);
+        boolean success = NetworkUtil.checkConnections(this, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                mWifiInitialized = true;
+            }
+        });
 
         if (success) {
             mWifiStateChecked = true;
@@ -90,6 +96,6 @@ public class SplashScreenActivity extends FragmentActivity {
     }
 
     public boolean isReady() {
-        return mWifiStateChecked;
+        return mWifiStateChecked && mWifiInitialized;
     }
 }

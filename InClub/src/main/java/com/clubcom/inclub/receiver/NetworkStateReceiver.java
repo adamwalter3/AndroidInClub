@@ -7,7 +7,10 @@ import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.inclub.MainApplication;
+import com.clubcom.inclub.activity.TabletCreateAccountActivity;
+import com.clubcom.inclub.activity.TabletLogInActivity;
 import com.clubcom.inclub.util.NetworkUtil;
 
 /**
@@ -18,23 +21,42 @@ public class NetworkStateReceiver extends BroadcastReceiver {
 
     //TODO update network states for different events
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         System.out.println("Network Changed: " + intent.toString());
         if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
             if (intent.hasExtra(WifiManager.EXTRA_NETWORK_INFO)) {
-                NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                final NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 System.out.println(networkInfo.toString());
                 if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
                     if (mListener != null) {
-                        NetworkUtil.checkConnections(context);
-                        mListener.networkConnected(networkInfo.getExtraInfo());
+                        NetworkUtil.checkConnections(context, new NetworkUtil.ConnectionCheckComplete() {
+                            @Override
+                            public void complete() {
+                                mListener.networkConnected(networkInfo.getExtraInfo());
+                                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                                    //do nothing
+                                } else {
+                                    startLogInActivity(context);
+                                }
+
+                            }
+                        });
                     } else {
                         System.out.println("Listener was null");
                     }
                 } else {
                     if (mListener != null) {
-                        NetworkUtil.checkConnections(context);
-                        mListener.networkStateChanged(networkInfo.getState().toString());
+                        NetworkUtil.checkConnections(context, new NetworkUtil.ConnectionCheckComplete() {
+                            @Override
+                            public void complete() {
+                                mListener.networkStateChanged(networkInfo.getState().toString());
+                                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                                    //do nothing
+                                } else {
+                                    startLogInActivity(context);
+                                }
+                            }
+                        });
                     } else {
                         System.out.println("Listener was null");
                     }
@@ -61,15 +83,24 @@ public class NetworkStateReceiver extends BroadcastReceiver {
                     break;
                 case DISCONNECTED:
                     System.out.println("SupplicantState" + "Disconnected");
-                    NetworkUtil.checkConnections(context);
-                    if (intent.getExtras().containsKey(WifiManager.EXTRA_SUPPLICANT_ERROR)) {
-                        int error = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, 0);
-                        if (error == 1) {
-                            if (mListener != null) {
-                                mListener.failedToConnect();
+                    NetworkUtil.checkConnections(context, new NetworkUtil.ConnectionCheckComplete() {
+                        @Override
+                        public void complete() {
+                            if (intent.getExtras().containsKey(WifiManager.EXTRA_SUPPLICANT_ERROR)) {
+                                int error = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, 0);
+                                if (error == 1) {
+                                    if (mListener != null) {
+                                        mListener.failedToConnect();
+                                        if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                                            //do nothing
+                                        } else {
+                                            startLogInActivity(context);
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
+                    });
                     break;
                 case DORMANT:
                     System.out.println("SupplicantState" + "DORMANT");
@@ -116,5 +147,12 @@ public class NetworkStateReceiver extends BroadcastReceiver {
         void networkConnected(String name);
         void networkStateChanged(String details);
         void failedToConnect();
+    }
+
+    public static void startLogInActivity(Context context) {
+        Intent i = new Intent(context, TabletLogInActivity.class);
+        // set the new task and clear flags
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(i);
     }
 }

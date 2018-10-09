@@ -57,7 +57,7 @@ public class MidrollPlayer {
             exoPlayerVideoFragment.showBanner(ContextCompat.getDrawable(tabletBaseActivity, R.drawable.logo_banner));
         }
 
-        exoPlayerVideoFragment.playHttpStream(UrlFactory.getMediaUrl(MainApplication.sMidrolls.get(MainApplication.sMidrollIndex)));
+        exoPlayerVideoFragment.playHttpStream(playbackListItem, UrlFactory.getMediaUrl(MainApplication.sMidrolls.get(MainApplication.sMidrollIndex)));
         return playbackListItem;
     }
 

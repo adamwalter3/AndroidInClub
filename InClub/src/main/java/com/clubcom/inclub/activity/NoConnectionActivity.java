@@ -9,6 +9,7 @@ import com.clubcom.ccframework.activity.BaseActivity;
 import com.clubcom.communicationframework.model.account.UserNetworkObject;
 import com.clubcom.inclub.MainApplication;
 import com.clubcom.inclub.R;
+import com.clubcom.inclub.util.LogReporter;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
@@ -53,7 +54,7 @@ public class NoConnectionActivity extends BaseActivity {
 
     @Override
     public void writeLogEntry(String log) {
-
+        LogReporter.reportLog(mBaseActivity, log);
     }
 
     @Override

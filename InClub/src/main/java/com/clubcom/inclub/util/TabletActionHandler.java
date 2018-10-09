@@ -67,7 +67,8 @@ public class TabletActionHandler extends ActionHandler {
                 action = action.substring(0, action.indexOf("."));
             }
 
-            fragment.playHttpStream(UrlFactory.getMediaUrl(action));
+            //TODO maybe make this item?
+            fragment.playHttpStream(null, UrlFactory.getMediaUrl(action));
             if (listener != null) {
                 listener.actionComplete();
             }

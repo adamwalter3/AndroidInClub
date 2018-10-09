@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.BaseActivity;
 import com.clubcom.ccframework.activity.LaunchMenuActivity;
 import com.clubcom.ccframework.fragment.BaseFragment;
@@ -30,7 +31,9 @@ import com.clubcom.inclub.R;
 import com.clubcom.inclub.fragment.TabletLaunchScreenMenuFragment;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
 import com.clubcom.inclub.util.MidrollPlayer;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.inclub.util.TabletActionHandler;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.crash.FirebaseCrash;
@@ -146,7 +149,12 @@ public class TabletLaunchMenuActivity extends LaunchMenuActivity {
 
     @Override
     public void setPriority(ContentItem contentItem, double priority, AdListPlayedMessageObject adListPlayedMessageObject) {
-        if (contentItem != null && contentItem.getKey() != null && MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData().getMidRollGroup().getPlaybackList().containsKey(contentItem.getKey())) {
+        if (contentItem != null
+                && contentItem.getKey() != null
+                && MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData() != null
+                && MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData().getMidRollGroup() != null
+                && MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData().getMidRollGroup().getPlaybackList() != null
+                && MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData().getMidRollGroup().getPlaybackList().containsKey(contentItem.getKey())) {
             MainApplication.sTabletLogInObject.getLogInNetworkObject().getAdListData().getMidRollGroup().getPlaybackList().get(contentItem.getKey())
                     .setPriority(priority);
         }
@@ -251,7 +259,7 @@ public class TabletLaunchMenuActivity extends LaunchMenuActivity {
 
     @Override
     public void writeLogEntry(String log) {
-
+        LogReporter.reportLog(mBaseActivity, log);
     }
 
     ExoPlayerVideoFragment.VideoPlaybackListener mVideoPlaybackListener = new ExoPlayerVideoFragment.VideoPlaybackListener() {
@@ -281,5 +289,21 @@ public class TabletLaunchMenuActivity extends LaunchMenuActivity {
         super.adSkipped(adListPlayedMessageObject);
 
         incrementMidrollIndex();
+    }
+
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }

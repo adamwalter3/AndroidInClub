@@ -52,8 +52,8 @@ android {
         }
 
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             archivesBaseName = "com.clubcom.InClub-" + readVersionName()
         }
@@ -62,22 +62,27 @@ android {
     productFlavors {
         planetfitness {
             applicationId "com.clubcom.inclub.planetfitness"
-            versionName "planet-fitness.1.0"
+            versionName "planet-fitness.1.0.1"
         }
 
         twentyfour {
             applicationId "com.clubcom.inclub.twentyfour"
-            versionName "twentyfour.1.0"
+            versionName "twentyfour.1.0.1"
         }
 
         nysc {
             applicationId "com.clubcom.inclub.nysc"
-            versionName "nysc.1.0"
+            versionName "nysc.1.0.1"
         }
 
         golds {
             applicationId "com.clubcom.inclub.golds"
-            versionName "golds.1.0"
+            versionName "golds.1.0.1"
+        }
+
+        laf {
+            applicationId "com.clubcom.inclub.laf"
+            versionName "laf.1.0.1"
         }
     }
 
@@ -105,7 +110,7 @@ dependencies {
     compile 'com.google.ExoPlayer:library:1.0.0-SNAPSHOT@aar'
     compile 'com.clubcom.communicationframework:library:1.0.0-SNAPSHOT@aar'
 
-    compile 'me.grantland:autofittextview:0.2.+'
+    compile 'me.grantland:autofittextview:0.2.1'
 
     compile 'com.google.android.gms:play-services-auth:9.8.0'
     compile 'com.google.firebase:firebase-core:9.8.0'

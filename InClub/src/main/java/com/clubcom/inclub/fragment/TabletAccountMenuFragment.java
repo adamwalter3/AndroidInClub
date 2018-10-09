@@ -3,6 +3,7 @@ package com.clubcom.inclub.fragment;
 import android.support.v4.content.ContextCompat;
 
 import com.clubcom.ccframework.adapter.BaseRecyclerAdapter;
+import com.clubcom.ccframework.fragment.AccountMenuFragment;
 import com.clubcom.ccframework.model.MyAccountMenuItem;
 import com.clubcom.communicationframework.model.apps.LayoutMap;
 import com.clubcom.inclub.MainApplication;
@@ -16,7 +17,7 @@ import java.util.List;
  * Created by adamwalter3 on 9/30/16.
  */
 
-public class TabletAccountMenuFragment extends com.clubcom.ccframework.fragment.AccountMenuFragment {
+public class TabletAccountMenuFragment extends AccountMenuFragment {
     @Override
     public BaseRecyclerAdapter getBaseRecyclerAdapter() {
         final String[] items = getResources().getStringArray(R.array.account_list_array);
@@ -46,6 +47,11 @@ public class TabletAccountMenuFragment extends com.clubcom.ccframework.fragment.
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean shouldShowDividerLine() {
+        return mBaseActivity.isTablet();
     }
 
     @Override

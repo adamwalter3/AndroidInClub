@@ -54,10 +54,14 @@ public class BannerPlayer {
 
     public static void showNextBanner(Context ctx, final BaseFragment baseFragment) {
         ContentItem banner = getNextBanner(true);
-        if (banner != null) {
+
+        //todo figure out why base frag can be null
+        if (banner != null && baseFragment != null) {
             baseFragment.showBanner(UrlFactory.getRemotePath(banner.getFileName(), CCDisplay.getScreenDensity(ctx)), new ArrayList<>(banner.getActions().values()));
         } else {
-            baseFragment.hideBanner();
+            if (baseFragment != null) {
+                baseFragment.hideBanner();
+            }
         }
     }
 

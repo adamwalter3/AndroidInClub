@@ -49,6 +49,11 @@ public class TabletGroupXScheduleFragment extends GroupXScheduleFragment {
     }
 
     @Override
+    public int getContentActiveLinkColor() {
+        return ContextCompat.getColor(mBaseActivity, R.color.content_active_link_color);
+    }
+
+    @Override
     public int getContentTextColor() {
         return ContextCompat.getColor(mBaseActivity, R.color.content_text_color);
     }

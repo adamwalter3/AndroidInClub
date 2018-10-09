@@ -3,6 +3,7 @@ package com.clubcom.inclub.activity;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.PersonalTrainerActivity;
 import com.clubcom.ccframework.fragment.PersonalTrainerInfoFragment;
 import com.clubcom.ccframework.fragment.PersonalTrainerMenuFragment;
@@ -13,6 +14,8 @@ import com.clubcom.inclub.fragment.TabletPersonalTrainerInfoFragment;
 import com.clubcom.inclub.fragment.TabletPersonalTrainerMenuFragment;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
@@ -72,7 +75,7 @@ public class TabletPersonalTrainerActivity extends PersonalTrainerActivity {
 
     @Override
     public void writeLogEntry(String log) {
-
+        LogReporter.reportLog(mBaseActivity, log);
     }
 
     @Override
@@ -83,5 +86,21 @@ public class TabletPersonalTrainerActivity extends PersonalTrainerActivity {
     @Override
     public PersonalTrainerInfoFragment getNewPersonalTrainerInfoFragment() {
         return new TabletPersonalTrainerInfoFragment();
+    }
+
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }

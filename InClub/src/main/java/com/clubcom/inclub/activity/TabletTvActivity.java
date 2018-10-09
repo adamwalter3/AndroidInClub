@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.*;
 import com.clubcom.ccframework.fragment.BaseFragment;
 import com.clubcom.ccframework.fragment.MenuFragment;
@@ -22,6 +23,8 @@ import com.clubcom.inclub.fragment.TabletTvMenuFragment;
 import com.clubcom.inclub.util.BannerPlayer;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.inclub.util.TabletActionHandler;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -53,8 +56,7 @@ public class TabletTvActivity extends TvActivity {
         };
 
         mExoPlayerVideoFragment.setActionCallback(mActionCallback);
-        mVLCVideoFragment.setActionCallback(mActionCallback);
-        mVitamioVideoFragment.setActionCallback(mActionCallback);
+//        mVLCVideoFragment.setActionCallback(mActionCallback);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class TabletTvActivity extends TvActivity {
 
     @Override
     public void playTvChannel(TvChannel tvChannel, ExoPlayerVideoFragment exoPlayerVideoFragment) {
-        exoPlayerVideoFragment.playHttpStream(tvChannel.getURL());
+        exoPlayerVideoFragment.playHttpStream(null, tvChannel.getURL());
     }
 
     @Override
@@ -134,6 +136,22 @@ public class TabletTvActivity extends TvActivity {
 
     @Override
     public void writeLogEntry(String log) {
+        LogReporter.reportLog(mBaseActivity, log);
+    }
 
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }

@@ -46,9 +46,9 @@
     <string name="config_file_missing">Account Configuration files are missing. Please try again later.</string>
     <string name="swap_columns">Swap Columns</string>
     <string name="not_connected">Not Connected</string>
-    <string name="not_connected_message">You must be connected to the internet to use this application.  If you are in a supported club we can automatically connect you to the ClubCom WiFi.</string>
+    <string name="not_connected_message">You must be connected to the ClubCom Network to use this application.</string>
     <string name="open_settings">Open Settings</string>
-    <string name="connect_to_clubcom">Connect To ClubCom</string>
+    <string name="connect_to_clubcom">Open Settings</string>
     <string name="auto_connect_failed_title">Automatic Connection Failed</string>
     <string name="auto_connect_failed_message">The attempt to connect automatically failed.  Please connect manually.</string>
     <string name="connect">Connect</string>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 
 import com.android.volley.VolleyError;
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.CreateAccountActivity;
 import com.clubcom.ccframework.fragment.createaccount.EmailFragment;
 import com.clubcom.ccframework.fragment.createaccount.SummaryFragment;
@@ -15,6 +16,9 @@ import com.clubcom.inclub.R;
 import com.clubcom.inclub.fragment.createaccount.TabletEmailFragment;
 import com.clubcom.inclub.fragment.createaccount.TabletSummaryFragment;
 import com.clubcom.inclub.fragment.createaccount.TabletUserIdFragment;
+import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.clubcom.projectile.StringListener;
 
 /**
@@ -113,6 +117,22 @@ public class TabletCreateAccountActivity extends CreateAccountActivity {
 
     @Override
     public void writeLogEntry(String log) {
+        LogReporter.reportLog(mBaseActivity, log);
+    }
 
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    finish();
+                }
+            }
+        });
     }
 }

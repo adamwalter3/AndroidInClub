@@ -1,9 +1,10 @@
 #Update
-#Tue Nov 22 11:12:27 GMT-05:00 2016
+#Wed May 17 10:10:12 GMT-05:00 2017
 HOME_ACTIVITY=.activity.StartScreenActivity
-SERIAL_NUMBER=82516020185
-WIFI_NAME=Clubcom PVS - Dev
-HOME_PACKAGE=com.clubcom.launcher
-LAUNCH_PACKAGE=com.clubcom.launcher
+WIFI_NAME=ClubComPVS
+WIFI_HIDDEN=true
 LAUNCH_ACTIVITY=.activity.LaunchScreenActivity
+LAUNCH_PACKAGE=com.clubcom.launcher
 WIFI_PASSWORD=\!QAZxsw2\#EDCvfr4
+PERMISSION_INT=-1
+HOME_PACKAGE=com.clubcom.launcher

@@ -20,11 +20,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.fragment.LogInFragment;
+import com.clubcom.ccframework.util.ClubcomLog;
 import com.clubcom.ccframework.util.ColorFilterUtility;
 import com.clubcom.inclub.MainApplication;
 import com.clubcom.inclub.R;
@@ -52,6 +54,15 @@ public class TabletLogInFragment extends LogInFragment implements View.OnClickLi
 
     }
 
+    @Override
+    protected void slideButtonsOut(int index) {
+        if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+            super.slideButtonsOut(index);
+        } else {
+            ((TabletLogInActivity) getActivity()).showNotConnectedDialog();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,6 +83,33 @@ public class TabletLogInFragment extends LogInFragment implements View.OnClickLi
         if (v != null) {
             v.addView(vStayLoggedIn);
         }
+
+        View view = new View(mBaseActivity);
+        view.setLayoutParams(new ViewGroup.LayoutParams(80, 80));
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(mBaseActivity);
+                View layout = LayoutInflater.from(mBaseActivity).inflate(R.layout.cc_admin_pw_dialog, null);
+
+                final EditText password = (EditText) layout.findViewById(R.id.admin_password);
+
+                builder.setView(layout);
+                builder.setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (password.getText().toString().equals("2221")) {
+                            MainApplication.sIsDemoMode = true;
+                        }
+                    }
+                });
+
+                builder.show();
+                return true;
+            }
+        });
+
+        v.addView(view);
 
         return v;
     }
@@ -109,8 +147,12 @@ public class TabletLogInFragment extends LogInFragment implements View.OnClickLi
     }
 
     private void createAccount() {
-        Intent intent = new Intent(mBaseActivity, TabletCreateAccountActivity.class);
-        startActivity(intent);
+        if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+            Intent intent = new Intent(mBaseActivity, TabletCreateAccountActivity.class);
+            startActivity(intent);
+        } else {
+            ((TabletLogInActivity) getActivity()).showNotConnectedDialog();
+        }
     }
 
     @Override

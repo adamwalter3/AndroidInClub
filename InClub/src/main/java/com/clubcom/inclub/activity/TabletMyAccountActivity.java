@@ -2,6 +2,7 @@ package com.clubcom.inclub.activity;
 
 import android.support.v4.content.ContextCompat;
 
+import com.clubcom.ccframework.FrameworkApplication;
 import com.clubcom.ccframework.activity.MyAccountActivity;
 import com.clubcom.ccframework.fragment.AccountMenuFragment;
 import com.clubcom.ccframework.fragment.AccountSettingsFragment;
@@ -17,6 +18,8 @@ import com.clubcom.inclub.fragment.TabletPrivacyPolicyFragment;
 import com.clubcom.inclub.fragment.TabletWorkoutMenuFragment;
 import com.clubcom.inclub.util.GoogleApiHelper;
 import com.clubcom.inclub.util.LogOutHelper;
+import com.clubcom.inclub.util.LogReporter;
+import com.clubcom.inclub.util.NetworkUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -50,7 +53,12 @@ public class TabletMyAccountActivity extends MyAccountActivity {
 
     @Override
     public AccountMenuFragment getNewAccountMenuFragment() {
-        return new TabletAccountMenuFragment();
+        TabletAccountMenuFragment tabletAccountMenuFragment = new TabletAccountMenuFragment();
+        if (!mTablet) {
+            tabletAccountMenuFragment.setShouldRetainClicks(false);
+        }
+
+        return tabletAccountMenuFragment;
     }
 
     @Override
@@ -101,6 +109,22 @@ public class TabletMyAccountActivity extends MyAccountActivity {
 
     @Override
     public void writeLogEntry(String log) {
+        LogReporter.reportLog(mBaseActivity, log);
+    }
 
+    @Override
+    protected void onAppToForeground() {
+        super.onAppToForeground();
+
+        NetworkUtil.checkConnections(mBaseActivity, new NetworkUtil.ConnectionCheckComplete() {
+            @Override
+            public void complete() {
+                if ((FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.WIFI_CONNECTED_CLUBCOM) || (FrameworkApplication.NETWORK_STATE_CURRENT && FrameworkApplication.CORPORATE_CALLS_AVAILABLE && MainApplication.sIsDemoMode)) {
+                    //do nothing
+                } else {
+                    LogOutHelper.doLogOut(mGoogleApiClient, mBaseActivity);
+                }
+            }
+        });
     }
 }
